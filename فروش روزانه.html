@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>دفتر فروش روزانه</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="دفتر فروش">
+<meta name="theme-color" content="#2f6fed">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4f5f7;--card:#fff;--tx:#1c1f26;--mu:#6b7280;--bd:#e3e6ea;--pr:#2f6fed;--c1:#2f6fed;--c2:#f59e0b;--c3:#10b981;--hl:#eaf1ff;--sub:#f0f3f8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#14161a;--card:#1e2127;--tx:#eceef2;--mu:#9aa1ad;--bd:#2f343c;--hl:#22314f;--sub:#262a32}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#14161a;--card:#1e2127;--tx:#eceef2;--mu:#9aa1ad;--bd:#2f343c;--hl:#22314f;--sub:#262a32}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Vazirmatn,Tahoma,sans-serif;font-size:14px;padding:12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
+h2{font-size:15px;margin:0 0 8px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.nav b{font-size:17px}
+button{font-family:inherit;background:var(--pr);color:#fff;border:0;border-radius:8px;padding:8px 14px;font-size:14px}
+button.g{background:var(--sub);color:var(--tx);border:1px solid var(--bd)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{display:block;font-size:12px;color:var(--mu);margin-bottom:3px}
+input{width:100%;font-family:inherit;font-size:16px;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);direction:ltr;text-align:right}
+.tot{margin-top:10px;font-weight:700;font-size:16px;display:flex;justify-content:space-between}
+.pt{font-size:12px;color:var(--mu);margin-top:4px;line-height:1.8;word-break:break-word}
+.sc{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:520px}
+th,td{padding:6px 4px;text-align:center;border-bottom:1px solid var(--bd);white-space:nowrap;font-size:12.5px}
+th{color:var(--mu);font-weight:400}
+tr.d{cursor:pointer}
+tr.sel{background:var(--hl)}
+tr.wk td{background:var(--sub);font-weight:700}
+.kp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kp div{background:var(--sub);border-radius:10px;padding:10px;text-align:center}
+.kp small{color:var(--mu);display:block;font-size:12px}
+.kp b{font-size:16px}
+.lg{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;margin-bottom:4px;color:var(--mu)}
+.lg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-left:4px}
+svg text{fill:var(--mu);font-family:Vazirmatn,Tahoma,sans-serif}
+</style>
+</head>
+<body>
+<div class="card nav"><button class="g" id="nx">◀ ماه بعد</button><b id="mt"></b><button class="g" id="pv">ماه قبل ▶</button></div>
+
+<div class="card">
+ <h2 id="ft"></h2>
+ <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--tx);margin:6px 0 10px"><input type="checkbox" id="f_h" style="width:22px;height:22px;padding:0"> 🚫 مغازه این روز تعطیل بود</label>
+ <div id="rw" style="display:none;margin-bottom:10px"><label>علت تعطیلی</label><input id="f_r" placeholder="مثلاً: شهادت حضرت فاطمه زهرا (س)" style="direction:rtl"></div>
+ <div class="grid">
+  <div><label>💵 فروش نقدی</label><input id="f_c" inputmode="text"></div>
+  <div><label>🏦 انتقال (چند مبلغ: ۱۷۰+۲۲۰+۶۰)</label><input id="f_x" inputmode="text"></div>
+  <div><label>📱 کارتخوان سیار</label><input id="f_m" inputmode="text"></div>
+  <div><label>⚪ کارتخوان سفید</label><input id="f_w" inputmode="text"></div>
+  <div><label>🔵 کارتخوان سپ</label><input id="f_s" inputmode="text"></div>
+ </div>
+ <div style="font-size:12px;color:var(--mu);margin-top:8px">💡 در هر فیلد می‌توانید چند مبلغ را با + جمع کنید، مثل ۱۲۰+۸۰+۵۰</div>
+ <div class="tot"><span>جمع فروش روز</span><span id="ftot"></span></div>
+</div>
+
+<div class="card"><h2>خلاصه ماه</h2><div class="kp" id="mk"></div></div>
+
+<div class="card"><h2>خلاصه مالی ماه (ثبت فقط جمع ماه و هزینه‌ها)</h2>
+ <div style="font-size:12px;color:var(--mu);margin-bottom:8px">برای ماه‌های گذشته می‌توانید به‌جای ثبت روزانه، فقط جمع کل فروش ماه را وارد کنید. اگر برای ماه فروش روزانه ثبت شده باشد، همان ملاک است.</div>
+ <div class="grid">
+  <div style="grid-column:1/-1"><label>💰 جمع کل فروش ماه</label><input id="ms_t" inputmode="text"></div>
+  <div><label>👷 کارگر</label><input id="ms_w" inputmode="text"></div>
+  <div><label>🏪 کرایه مغازه</label><input id="ms_r" inputmode="text"></div>
+  <div><label>💡 برق مغازه</label><input id="ms_e" inputmode="text"></div>
+  <div><label>🧾 مالیات</label><input id="ms_x" inputmode="text"></div>
+  <div><label>➕ سایر هزینه‌ها</label><input id="ms_o" inputmode="text"></div>
+  <div><label>💧 آب</label><input id="ms_a" inputmode="text"></div>
+  <div><label>✅ سود خالص (س خ)</label><input id="ms_n" inputmode="text"></div>
+  <div><label>🚫 تعداد روز تعطیل</label><input id="ms_h" inputmode="numeric"></div>
+ </div>
+ <div class="tot"><span>جمع هزینه‌های ثبت‌شده</span><span id="ms_sum"></span></div>
+</div>
+
+<div class="card"><h2>جدول فروش ماه</h2><div class="sc"><table id="tb"></table></div></div>
+
+<div class="card"><h2>نمودار فروش روزانه ماه</h2><div class="sc" id="ch1"></div></div>
+<div class="card"><h2>مقایسه هفته انتخابی با هفته قبل و بعد</h2><div id="lg2" class="lg"></div><div class="sc" id="ch2"></div></div>
+<div class="card"><h2>مقایسه جمع هفتگی (۸ هفته اخیر)</h2><div class="sc" id="ch3"></div></div>
+<div class="card"><h2>مقایسه جمع ماهانه (۶ ماه اخیر)</h2><div class="sc" id="ch4"></div></div>
+
+<div class="card"><h2>🛟 پشتیبان‌گیری و بازیابی</h2>
+ <div id="cl" class="pt" style="margin-bottom:8px"></div>
+ <div class="grid">
+  <button id="b_exp">⬇️ ذخیره / ارسال فایل پشتیبان</button>
+  <label style="background:var(--sub);border:1px solid var(--bd);border-radius:8px;padding:8px 14px;text-align:center;color:var(--tx);margin:0;font-size:14px">⬆️ بازیابی از فایل<input type="file" id="b_imp" accept=".json,application/json" hidden></label>
+ </div>
+ <div class="pt" style="margin-top:8px">اطلاعات فقط در حافظه همین گوشی است. هر هفته یک فایل پشتیبان بگیرید و آن را در تلگرام (Saved Messages)، ایمیل یا گوگل‌درایو نگه دارید. بازیابی از فایل، اطلاعات فعلی را جایگزین می‌کند.</div>
+</div>
+
+<script>
+const WD=['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'];
+const MN=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+const F=['c','x','m','w','s'];
+const fl=Math.floor;
+function toJ(gy,gm,gd){const g=[0,31,59,90,120,151,181,212,243,273,304,334];const g2=gm>2?gy+1:gy;let d=355666+365*gy+fl((g2+3)/4)-fl((g2+99)/100)+fl((g2+399)/400)+gd+g[gm-1];let jy=-1595+33*fl(d/12053);d%=12053;jy+=4*fl(d/1461);d%=1461;if(d>365){jy+=fl((d-1)/365);d=(d-1)%365}const jm=d<186?1+fl(d/31):7+fl((d-186)/30);const jd=1+(d<186?d%31:(d-186)%30);return[jy,jm,jd]}
+function toG(jy,jm,jd){jy+=1595;let d=-355668+365*jy+fl(jy/33)*8+fl(((jy%33)+3)/4)+jd+(jm<7?(jm-1)*31:(jm-7)*30+186);let gy=400*fl(d/146097);d%=146097;if(d>36524){gy+=100*fl(--d/36524);d%=36524;if(d>=365)d++}gy+=4*fl(d/1461);d%=1461;if(d>365){gy+=fl((d-1)/365);d=(d-1)%365}let gd=d+1;const a=[0,31,(gy%4==0&&gy%100!=0)||gy%400==0?29:28,31,30,31,30,31,31,30,31,30,31];let gm;for(gm=0;gm<13&&gd>a[gm];gm++)gd-=a[gm];return[gy,gm,gd]}
+const p2=n=>String(n).padStart(2,'0');
+const isoJ=(jy,jm,jd)=>{const g=toG(jy,jm,jd);return g[0]+'-'+p2(g[1])+'-'+p2(g[2])};
+const jOf=iso=>{const a=iso.split('-').map(Number);return toJ(a[0],a[1],a[2])};
+const addD=(iso,n)=>new Date(Date.parse(iso+'T00:00:00Z')+n*864e5).toISOString().slice(0,10);
+const wd=iso=>(new Date(iso+'T00:00:00Z').getUTCDay()+1)%7;
+const wStart=iso=>addD(iso,-wd(iso));
+const mLen=(jy,jm)=>jm<=6?31:jm<=11?30:(toJ(...toG(jy,12,30))[1]===12?30:29);
+const fmt=n=>Math.round(n).toLocaleString('fa-IR');
+const num=s=>parseInt(String(s).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d]/g,''))||0;
+
+let db={};try{db=JSON.parse(localStorage.getItem('sales')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('sales',JSON.stringify(db))}catch(e){}touch()};
+let ms={};try{ms=JSON.parse(localStorage.getItem('msum')||'{}')}catch(e){}
+const saveM=()=>{try{localStorage.setItem('msum',JSON.stringify(ms))}catch(e){}};
+try{if(!localStorage.getItem('seed1')){if(!ms['1405-07']){ms['1405-07']={t:1239969,w:14700,r:15000,e:7750,x:5000,n:205542};saveM()}localStorage.setItem('seed1','1')}}catch(e){}
+try{if(!localStorage.getItem('seed2')){if(!ms['1405-06'])ms['1405-06']={t:1055911,w:19215,r:15000,e:8500,x:5000,a:1600,n:161863};if(!ms['1405-05'])ms['1405-05']={t:793255,r:20000,x:5000,e:8500,a:1600,n:123551,h:2};saveM();localStorage.setItem('seed2','1')}}catch(e){}
+try{if(!localStorage.getItem('seed3')){if(!ms['1405-04'])ms['1405-04']={t:638933,r:20000,x:5000,e:8500,a:800,n:93486,h:3};saveM();localStorage.setItem('seed3','1')}}catch(e){}
+try{if(!localStorage.getItem('seed4')){if(!ms['1405-03'])ms['1405-03']={t:575526,r:7000};saveM();localStorage.setItem('seed4','1')}}catch(e){}
+const day=iso=>{const r=db[iso]||{};const o={h:!!r.h,r:r.r||''};let t=0;F.forEach(k=>{o[k]=r.h?0:(r[k]||0);t+=o[k]});o.t=t;return o};
+const wSum=st=>{let t=0;for(let i=0;i<7;i++)t+=day(addD(st,i)).t;return t};
+
+const now=new Date();
+let todayIso=now.getFullYear()+'-'+p2(now.getMonth()+1)+'-'+p2(now.getDate());
+let sel=todayIso;
+let [vy,vm]=jOf(sel);
+
+function chart(el,labels,series,showVal){
+ const n=labels.length,g=series.length,bw=g>1?13:Math.max(14,Math.min(26,300/n));
+ const gw=g*bw+8,W=Math.max(330,n*gw+20),H=190,T=18,B=34;
+ const mx=Math.max(1,...series.flatMap(s=>s.v));
+ let o=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`;
+ o+=`<line x1="0" x2="${W}" y1="${H-B}" y2="${H-B}" stroke="var(--bd)"/>`;
+ labels.forEach((l,i)=>{
+  const x0=W-10-(i+1)*gw+4;
+  series.forEach((s,j)=>{
+   const v=s.v[i],h=(H-B-T)*v/mx,x=x0+(g-1-j)*bw;
+   o+=`<rect x="${x}" y="${H-B-h}" width="${bw-2}" height="${Math.max(h,v?1:0)}" rx="2" fill="${s.c}"/>`;
+   if(showVal&&v)o+=`<text x="${x+bw/2-1}" y="${H-B-h-3}" font-size="8" text-anchor="middle">${fmt(v/1000)}</text>`;
+  });
+  o+=`<text x="${x0+g*bw/2-1}" y="${H-B+13}" font-size="10" text-anchor="middle">${l}</text>`;
+ });
+ el.innerHTML=o+'</svg>';
+ el.scrollLeft=0;
+}
+
+function updMs(){const q=ms[vy+'-'+p2(vm)]||{};document.getElementById('ms_sum').textContent=fmt((q.w||0)+(q.r||0)+(q.e||0)+(q.x||0)+(q.o||0)+(q.a||0))}
+function fillMs(){const q=ms[vy+'-'+p2(vm)]||{};['t','w','r','e','x','o','a','n','h'].forEach(k=>document.getElementById('ms_'+k).value=q[k]?q[k].toLocaleString('en-US'):'');updMs()}
+function showP(k){let d=document.getElementById('d_'+k);if(!d){d=document.createElement('div');d.id='d_'+k;d.className='pt';document.getElementById('f_'+k).after(d)}
+ const ex=(db[sel]||{})[k+'e'];if(!ex){d.innerHTML='';return}
+ const ps=ex.split(/[+و،]/).map(s=>s.trim());if(ps.length>1&&ps[ps.length-1]==='')ps.pop();
+ let s=0,bad=0;const ch=ps.map(p=>{if(!p||!/[\d۰-۹٠-٩]/.test(p)){bad++;return '<span style="color:#e11d48">⚠ خالی</span>'}const n=num(p);s+=n;return fmt(n)});
+ d.innerHTML=ps.length.toLocaleString('fa-IR')+' مبلغ: '+ch.join(' + ')+' = <b style="color:var(--tx)">'+fmt(s)+'</b>'+(bad?' <span style="color:#e11d48">(مورد نامشخص)</span>':'')}
+function setH(h){document.getElementById('rw').style.display=h?'block':'none';document.getElementById('f_h').checked=h;F.forEach(k=>document.getElementById('f_'+k).disabled=h)}
+function selectDay(iso){
+ sel=iso;const d=day(iso),j=jOf(iso);
+ document.getElementById('ft').textContent='ثبت فروش: '+WD[wd(iso)]+' '+j[2].toLocaleString('fa-IR')+' '+MN[j[1]-1]+' '+j[0].toLocaleString('fa-IR');
+ const rr=db[iso]||{};F.forEach(k=>{document.getElementById('f_'+k).value=rr[k+'e']||(rr[k]?rr[k].toLocaleString('en-US'):'');showP(k)});setH(!!rr.h);document.getElementById('f_r').value=rr.r||'';
+ document.getElementById('ftot').textContent=fmt(d.t);
+ renderAll();
+}
+
+function renderAll(){
+ document.getElementById('mt').textContent=MN[vm-1]+' '+vy.toLocaleString('fa-IR').replace('٬','');
+ const L=mLen(vy,vm);
+ // table
+ let h='<tr><th>روز</th><th>تاریخ</th><th>نقدی</th><th>انتقال</th><th>سیار</th><th>سفید</th><th>سپ</th><th>جمع</th></tr>';
+ let mt=0,mh=0,labels=[],vals=[];
+ for(let d=1;d<=L;d++){
+  const iso=isoJ(vy,vm,d),r=day(iso);mt+=r.t;if(r.h)mh++;labels.push(d.toLocaleString('fa-IR'));vals.push(r.t);
+  h+=`<tr class="d ${iso===sel?'sel':''}" data-i="${iso}"><td>${WD[wd(iso)]}</td><td>${d.toLocaleString('fa-IR')} ${MN[vm-1]}</td>${r.h?'<td colspan="6" style="color:#e11d48;font-weight:700;white-space:normal">🚫 تعطیل'+(r.r?' — '+r.r.replace(/</g,'&lt;'):'')+'</td>':`<td>${r.c?fmt(r.c):'-'}</td><td>${r.x?fmt(r.x):'-'}</td><td>${r.m?fmt(r.m):'-'}</td><td>${r.w?fmt(r.w):'-'}</td><td>${r.s?fmt(r.s):'-'}</td><td><b>${r.t?fmt(r.t):'-'}</b></td>`}</tr>`;
+  if(wd(iso)===6||d===L){const s=wStart(iso),t=wSum(s);let hc=0;for(let i=0;i<7;i++)if(day(addD(s,i)).h)hc++;h+=`<tr class="wk"><td colspan="4">جمع هفته (${fmt(t)})</td><td colspan="4">متوسط ۷ روزه: ${fmt(t/7)}${hc?' ('+hc.toLocaleString('fa-IR')+' تعطیل)':''}</td></tr>`}
+ }
+ const qk=ms[vy+'-'+p2(vm)]||{};if(!mt&&qk.t)mt=qk.t;const eS=(qk.w||0)+(qk.r||0)+(qk.e||0)+(qk.x||0)+(qk.o||0)+(qk.a||0);if(!mh&&qk.h)mh=qk.h;
+ const tb=document.getElementById('tb');tb.innerHTML=h;
+ tb.querySelectorAll('tr.d').forEach(r=>r.onclick=()=>{selectDay(r.dataset.i);scrollTo({top:0,behavior:'smooth'})});
+ document.getElementById('mk').innerHTML=`<div><small>جمع کل ماهانه</small><b>${fmt(mt)}</b></div><div><small>متوسط روزانه (${L.toLocaleString('fa-IR')} روز)</small><b>${fmt(mt/L)}</b></div><div><small>روزهای تعطیل ماه</small><b>${mh.toLocaleString('fa-IR')} روز</b></div><div><small>متوسط فقط روزهای باز</small><b>${fmt(mt/Math.max(1,L-mh))}</b></div>${eS?'<div><small>جمع هزینه‌ها</small><b>'+fmt(eS)+'</b></div>':''}${qk.n?'<div><small>سود خالص</small><b>'+fmt(qk.n)+'</b></div>':''}`;
+ // charts
+ chart(document.getElementById('ch1'),labels,[{c:'var(--c1)',v:vals}],false);
+ const ws=wStart(sel),ps=addD(ws,-7),ns=addD(ws,7);
+ const ser=[[ps,'var(--c2)','هفته قبل'],[ws,'var(--c1)','هفته انتخابی'],[ns,'var(--c3)','هفته بعد']].map(a=>({c:a[1],n:a[2],t:wSum(a[0]),v:[0,1,2,3,4,5,6].map(i=>day(addD(a[0],i)).t)}));
+ document.getElementById('lg2').innerHTML=ser.map(s=>`<span><i style="background:${s.c}"></i>${s.n}: ${fmt(s.t)}</span>`).join('');
+ chart(document.getElementById('ch2'),WD,ser,true);
+ const wl=[],wv=[];for(let i=7;i>=0;i--){const s=addD(ws,-7*i);const j=jOf(s);wl.push(j[2].toLocaleString('fa-IR')+' '+MN[j[1]-1].slice(0,3));wv.push(wSum(s))}
+ chart(document.getElementById('ch3'),wl,[{c:'var(--c1)',v:wv}],true);
+ const ml=[],mv=[];for(let i=5;i>=0;i--){let y=vy,m=vm-i;while(m<1){m+=12;y--}let t=0;for(let d=1;d<=mLen(y,m);d++)t+=day(isoJ(y,m,d)).t;ml.push(MN[m-1]);mv.push(t||((ms[y+'-'+p2(m)]||{}).t||0))}
+ chart(document.getElementById('ch4'),ml,[{c:'var(--c3)',v:mv}],true);
+}
+
+F.forEach(k=>{document.getElementById('f_'+k).addEventListener('input',e=>{
+ const raw=e.target.value;let v;
+ if(/[+و،]/.test(raw)){v=raw.split(/[+و،]/).reduce((a,p)=>a+num(p),0)}
+ else{v=num(raw);e.target.value=v?v.toLocaleString('en-US'):''}
+ db[sel]=db[sel]||{};db[sel][k]=v;if(/[+و،]/.test(raw))db[sel][k+'e']=raw;else delete db[sel][k+'e'];save();showP(k);
+ document.getElementById('ftot').textContent=fmt(day(sel).t);renderAll();
+})});
+document.getElementById('f_r').addEventListener('input',e=>{db[sel]=db[sel]||{};db[sel].r=e.target.value;save();renderAll()});
+document.getElementById('f_h').addEventListener('change',e=>{db[sel]=db[sel]||{};db[sel].h=e.target.checked;save();setH(e.target.checked);document.getElementById('ftot').textContent=fmt(day(sel).t);renderAll()});
+F.forEach(k=>document.getElementById('f_'+k).addEventListener('blur',e=>{if((db[sel]||{})[k+'e'])return;const v=day(sel)[k];e.target.value=v?v.toLocaleString('en-US'):''}));
+['t','w','r','e','x','o','a','n','h'].forEach(k=>document.getElementById('ms_'+k).addEventListener('input',e=>{let raw=e.target.value,v;if(/[+و،]/.test(raw)){v=raw.split(/[+و،]/).reduce((a,p)=>a+num(p),0)}else{v=num(raw);e.target.value=v?v.toLocaleString('en-US'):''}const key=vy+'-'+p2(vm);ms[key]=ms[key]||{};ms[key][k]=v;saveM();touch();updMs();renderAll()}));
+document.getElementById('nx').onclick=()=>{vm++;if(vm>12){vm=1;vy++}fillMs();renderAll()};
+document.getElementById('pv').onclick=()=>{vm--;if(vm<1){vm=12;vy--}fillMs();renderAll()};
+// --- backup (local) ---
+let userTs=+(localStorage.getItem('sales_ts')||0);
+const el=id=>document.getElementById(id);
+const stamp=t=>t?new Date(t).toLocaleString('fa-IR'):'';
+function snap(){return JSON.stringify({db,ms,ts:userTs})}
+function setCl(t){el('cl').textContent=t}
+function touch(){userTs=Date.now();try{localStorage.setItem('sales_ts',String(userTs))}catch(e){}setCl('آخرین تغییر: '+stamp(userTs)+' — فراموش نکنید فایل پشتیبان بگیرید')}
+function applyBk(o){db=o.db||{};ms=o.ms||{};userTs=o.ts||0;try{localStorage.setItem('sales',JSON.stringify(db));localStorage.setItem('msum',JSON.stringify(ms));localStorage.setItem('sales_ts',String(userTs))}catch(e){}selectDay(sel);fillMs()}
+el('b_exp').onclick=async()=>{
+ const name='sales-backup-'+new Date().toISOString().slice(0,10)+'.json';
+ try{const f=new File([snap()],name,{type:'application/json'});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'پشتیبان دفتر فروش'});setCl('✅ فایل پشتیبان آماده شد');return}}catch(e){if(e&&e.name==='AbortError')return}
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([snap()],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();a.remove();setCl('✅ فایل پشتیبان دانلود شد: '+name)};
+el('b_imp').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||typeof o.db!=='object')throw 0;applyBk(o);touch();setCl('✅ از فایل بازیابی شد')}catch(x){setCl('⚠ فایل معتبر نیست')}};r.readAsText(f);e.target.value=''};
+setCl(userTs?'آخرین تغییر: '+stamp(userTs):'هنوز فایل پشتیبانی نگرفته‌اید');
+selectDay(sel);fillMs();
+</script>
+</body>
+</html>
